@@ -1,0 +1,44 @@
+"""Configuration files for training and API."""
+
+# training_config.yaml
+training:
+  model_type: ensemble
+  ensemble_weights:
+    lightgbm: 0.40
+    xgboost: 0.35
+    random_forest: 0.25
+  
+  hyperparameters:
+    n_estimators: 100
+    max_depth: 15
+    learning_rate: 0.1
+    random_state: 42
+  
+  data_split:
+    train_ratio: 0.70
+    val_ratio: 0.15
+    test_ratio: 0.15
+  
+  feature_engineering:
+    rolling_windows: [3, 5, 10, 20]
+    normalize_method: standard
+
+evaluation:
+  metrics:
+    - accuracy
+    - f1_macro
+    - f1_weighted
+    - precision
+    - recall
+  
+  target_performance:
+    f1_macro: 0.75
+    accuracy: 0.80
+
+api:
+  host: 0.0.0.0
+  port: 8000
+  model_path: models/ensemble_model.pkl
+  log_level: INFO
+
+
