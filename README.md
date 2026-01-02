@@ -6,6 +6,10 @@ Production-ready ML pipeline for multi-source signal fusion and state classifica
 
 This project demonstrates how machine learning can **reduce cognitive load** by fusing heterogeneous signals from multiple sources into unified, human-meaningful states. The system combines time-series data from different industries (financial markets + plant health sensors) and classifies them into 5 interpretable states that control ambient lighting.
 
+<div align="center">
+  <img src="docs/image.png" alt="Multi-Signal State Classifier: Translating Complex Systems into Intuitive Signals" width="600" />
+</div>
+
 ### Proof of Concept: Multi-Industry Signal Fusion
 
 **Key Insight**: This project intentionally uses data from **two different industries** (trading + agriculture) as a **proof of concept** to demonstrate that ML can successfully fuse heterogeneous signals and reduce cognitive complexity.
@@ -586,7 +590,6 @@ Complete documentation is available in the `docs/` folder:
 - **[Development Guide](docs/DEVELOPMENT.md)** - Development setup, code structure, testing, and contributing guidelines
 - **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** - Common issues, solutions, and debugging tips
 - **[Ambient Lighting Documentation](docs/AMBIENT_LIGHTING.md)** - Rationale for hourly data collection and lighting behavior
-- **[ML Zoomcamp Submission](docs/ML_ZOOMCAMP_SUBMISSION.md)** - Complete ML Zoomcamp submission documentation and requirements
 
 All documentation is organized by topic for easy navigation and reference.
 
