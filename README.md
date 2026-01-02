@@ -54,7 +54,6 @@ The technology reduces the cognitive task of processing multiple data streams si
 - [ML Zoomcamp Requirements](#ml-zoomcamp-requirements)
 - [References](#references)
 - [License](#license)
-- [Support & Contact](#support--contact)
 
 ---
 
@@ -418,165 +417,23 @@ The pipeline creates **100+ engineered features**:
 
 See the full [API Documentation](docs/API.md) or visit the interactive Swagger UI at `http://localhost:8000/docs` when running locally.
 
-### Key Endpoints
-
-- `POST /predict` - Single prediction
-- `POST /predict/batch` - Batch prediction
-- `GET /health` - Health check
-- `GET /metrics` - Performance metrics
-- `GET /lighting-info/{state}` - Lighting configuration for a state
-- `GET /docs` - Swagger UI interactive documentation
-
 ---
 
 ## Docker Deployment
 
-### Build Docker Image
-
-```bash
-# Build the image
-docker build -t multi-signal-classifier:latest .
-
-# Verify build
-docker images | grep multi-signal-classifier
-```
-
-### Run Docker Container
-
-```bash
-# Run container
-docker run -p 8000:8000 \
-  -e MODEL_PATH=/app/models/ensemble_model.pkl \
-  -e LOG_LEVEL=INFO \
-  -v $(pwd)/models:/app/models \
-  -v $(pwd)/logs:/app/logs \
-  multi-signal-classifier:latest
-
-# Check if container is running
-curl http://localhost:8000/health
-```
-
-### Docker Compose
-
-```bash
-# Start all services
-docker-compose up
-
-# Start in background
-docker-compose up -d
-
-# View logs
-docker-compose logs -f api
-
-# Stop services
-docker-compose down
-```
-
-**Full Deployment Guide**: See [Deployment Guide](docs/DEPLOYMENT.md) for comprehensive deployment instructions, troubleshooting, and advanced deployment options (Kubernetes, Cloud platforms).
+See the [Deployment Guide](docs/DEPLOYMENT.md) for comprehensive deployment instructions, troubleshooting, and advanced deployment options (Kubernetes, Cloud platforms).
 
 ---
 
 ## Development
 
-### Running Tests
-
-```bash
-# Run all tests
-pytest tests/ -v
-
-# Run with coverage
-pytest tests/ --cov=src --cov-report=html
-
-# Run specific test file
-pytest tests/test_models.py -v
-```
-
-### Test Coverage
-
-- Data loading and generation: ✓
-- Feature engineering: ✓
-- Model training and evaluation: ✓
-- API endpoints: ✓
-- Integration tests: ✓
-
-**Target Coverage: >80%** ✅
-
-### Code Quality
-
-- ✅ Type hints on all functions
-- ✅ Comprehensive docstrings
-- ✅ Clean code principles followed
-- ✅ Error handling implemented
-- ✅ Logging throughout
-
-### Configuration
-
-Edit `configs/training_config.yaml` to customize:
-- Ensemble weights
-- Hyperparameters
-- Data split ratios
-- Feature engineering parameters
-- Evaluation metrics
-
-**Full Development Guide**: See [Development Guide](docs/DEVELOPMENT.md) for complete development documentation.
+See the [Development Guide](docs/DEVELOPMENT.md) for complete development documentation, including testing, code quality standards, and configuration options.
 
 ---
 
 ## Troubleshooting
 
-### Common Issues
-
-#### Issue: Model not found
-```
-ERROR: Model not found at models/ensemble_model.pkl
-```
-
-**Solution:**
-```bash
-# Train model first
-python train.py
-```
-
-#### Issue: Port already in use
-```
-ERROR: Address already in use
-```
-
-**Solution:**
-```bash
-# Find process using port (Linux/Mac)
-lsof -i :8000
-
-# Or use different port
-uvicorn src.api.predict_api:app --port 9000
-```
-
-#### Issue: Import errors
-```
-ModuleNotFoundError: No module named '...'
-```
-
-**Solution:**
-```bash
-# Reinstall dependencies
-pip install -r requirements.txt --upgrade
-
-# Ensure virtual environment is activated
-source venv/bin/activate  # Windows: venv\Scripts\activate
-```
-
-#### Issue: Slow predictions
-```
-Latency > 100ms
-```
-
-**Solution:**
-- Check logs for errors: `docker logs ml-classifier` (if using Docker)
-- Monitor resource usage: `docker stats`
-- Ensure model is loaded correctly
-- Check feature engineering pipeline performance
-
-**Full Troubleshooting Guide**: See [Troubleshooting Guide](docs/TROUBLESHOOTING.md) for comprehensive troubleshooting steps.
+See the [Troubleshooting Guide](docs/TROUBLESHOOTING.md) for comprehensive troubleshooting steps and solutions to common issues.
 
 ---
 
@@ -631,17 +488,6 @@ All documentation is organized by topic for easy navigation and reference.
 - ✅ **Documentation (5%)**: Complete README, API docs, deployment guide
 - ✅ **Reproducibility (5%)**: requirements.txt, environment setup, reproducible ML pipeline
 
-### Deliverables
-
-- [x] Complete repository with all code
-- [x] 5 EDA notebooks
-- [x] Production scripts in `/src`
-- [x] FastAPI application
-- [x] Docker container
-- [x] Test suite (>80% coverage)
-- [x] Trained model
-- [x] Comprehensive documentation
-
 
 ---
 
@@ -675,29 +521,6 @@ This project is for educational and research purposes only. The multi-industry d
 
 ---
 
-## Support & Contact
-
-For issues, questions, or contributions:
-
-1. **Check Documentation**: 
-   - [API Documentation](docs/API.md) - API endpoints and usage
-   - [Data Documentation](docs/DATA.md) - Data structure and generation
-   - [Deployment Guide](docs/DEPLOYMENT.md) - Deployment instructions
-   - [Development Guide](docs/DEVELOPMENT.md) - Development workflow
-   - [Troubleshooting Guide](docs/TROUBLESHOOTING.md) - Common issues and solutions
-   - Interactive API docs at `/docs` when running locally
-
-2. **Review Existing Issues**: Check GitHub Issues for similar problems
-
-3. **Create New Issue**: Include:
-   - Error message
-   - Operating system
-   - Python version
-   - Steps to reproduce
-
-4. **Run Tests**: `pytest tests/ -v` to verify setup
-
----
 
 ## Acknowledgments
 
