@@ -29,13 +29,13 @@ The technology reduces the cognitive task of processing multiple data streams si
 
 ## 🌟 Key Features
 
-- ✅ **Multi-Source Data Fusion**: Combines signals from trading and agriculture domains (PoC demonstration)
-- ✅ **Ensemble ML Model**: LightGBM + XGBoost + Random Forest with weighted voting
-- ✅ **Production-Ready API**: FastAPI with <100ms latency
-- ✅ **Complete ML Pipeline**: 5 EDA notebooks → Feature Engineering → Training → Deployment
-- ✅ **Comprehensive Testing**: >80% code coverage with pytest
-- ✅ **Docker & CI/CD Ready**: Containerized deployment
-- ✅ **State-Based Lighting Control**: Ambient lighting as intuitive visual feedback
+- **Multi-Source Data Fusion**: Combines signals from trading and agriculture domains (PoC demonstration)
+- **Ensemble ML Model**: LightGBM + XGBoost + Random Forest with weighted voting
+- **Production-Ready API**: FastAPI with <100ms latency
+- **Complete ML Pipeline**: 5 EDA notebooks → Feature Engineering → Training → Deployment
+- **Comprehensive Testing**: >80% code coverage with pytest
+- **Docker & CI/CD Ready**: Containerized deployment
+- **State-Based Lighting Control**: Ambient lighting as intuitive visual feedback
 
 ## 📋 Table of Contents
 
@@ -45,10 +45,6 @@ The technology reduces the cognitive task of processing multiple data streams si
 - [Project Structure](#project-structure)
 - [Data & Features](#data--features)
 - [Model Architecture](#model-architecture)
-- [API Documentation](#api-documentation)
-- [Docker Deployment](#docker-deployment)
-- [Development](#development)
-- [Troubleshooting](#troubleshooting)
 - [Documentation](#documentation)
 - [Future Enhancements](#future-enhancements)
 - [ML Zoomcamp Requirements](#ml-zoomcamp-requirements)
@@ -106,7 +102,7 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 uvicorn src.api.predict_api:app --reload --port 8000
 ```
 
-The server will start and be available at `http://localhost:8000`
+The server will start and be available at [http://localhost:8000](http://localhost:8000)
 
 **Keep this terminal open** - the server needs to be running to handle prediction requests.
 
@@ -140,7 +136,7 @@ curl -X POST http://localhost:8000/predict \
 
 ### 4. Interactive API Documentation
 
-Open browser to: `http://localhost:8000/docs`
+Open browser to: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 You can test all endpoints directly from the Swagger UI. This is the easiest way to make predictions and explore the API.
 
@@ -180,7 +176,7 @@ uvicorn src.api.predict_api:app --reload --port 8000
 
 ### Verify Installation
 
-Navigate to `http://localhost:8000/docs` to see the interactive API documentation.
+Navigate to [http://localhost:8000/docs](http://localhost:8000/docs) to see the interactive API documentation.
 
 ---
 
@@ -413,35 +409,11 @@ The pipeline creates **100+ engineered features**:
 
 ---
 
-## API Documentation
-
-See the full [API Documentation](docs/API.md) or visit the interactive Swagger UI at `http://localhost:8000/docs` when running locally.
-
----
-
-## Docker Deployment
-
-See the [Deployment Guide](docs/DEPLOYMENT.md) for comprehensive deployment instructions, troubleshooting, and advanced deployment options (Kubernetes, Cloud platforms).
-
----
-
-## Development
-
-See the [Development Guide](docs/DEVELOPMENT.md) for complete development documentation, including testing, code quality standards, and configuration options.
-
----
-
-## Troubleshooting
-
-See the [Troubleshooting Guide](docs/TROUBLESHOOTING.md) for comprehensive troubleshooting steps and solutions to common issues.
-
----
-
 ## Documentation
 
 Complete documentation is available in the `docs/` folder:
 
-- **[API Documentation](docs/API.md)** - Complete API reference with endpoints, request/response formats, and examples
+- **[API Documentation](docs/API.md)** - Complete API reference with endpoints, request/response formats, and examples. Visit the interactive Swagger UI at `http://localhost:8000/docs` when running locally.
 - **[Data Documentation](docs/DATA.md)** - Data generation, datapoints, feature engineering, and data structure
 - **[Deployment Guide](docs/DEPLOYMENT.md)** - Comprehensive deployment instructions for local, Docker, and cloud platforms
 - **[Development Guide](docs/DEVELOPMENT.md)** - Development setup, code structure, testing, and contributing guidelines
