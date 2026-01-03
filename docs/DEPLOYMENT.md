@@ -55,6 +55,13 @@ Navigate to `http://localhost:8000/docs` to see the interactive API documentatio
 
 ## Docker Deployment
 
+### Prerequisites
+
+**Important**: Before building the Docker image, ensure you have:
+1. Trained the model: `python train.py` (creates `models/ensemble_model.pkl` and `models/feature_pipeline.pkl`)
+2. Docker and Docker Compose installed
+3. Models directory exists with trained model files
+
 ### Build Docker Image
 
 ```bash

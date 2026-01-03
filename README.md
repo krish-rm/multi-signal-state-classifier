@@ -41,6 +41,7 @@ The technology reduces the cognitive task of processing multiple data streams si
 
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
+- [Docker Deployment](#docker-deployment)
 - [Project Structure](#project-structure)
 - [Data & Features](#data--features)
 - [Model Architecture](#model-architecture)
@@ -144,6 +145,32 @@ curl -X POST http://localhost:8000/predict \
 Open browser to: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 You can test all endpoints directly from the Swagger UI. This is the easiest way to make predictions and explore the API.
+
+---
+
+## Docker Deployment
+
+**Prerequisites**: Train the model first (`python train.py`) to generate `models/ensemble_model.pkl`
+
+### Quick Docker Setup
+
+```bash
+# Build and start with Docker Compose
+docker-compose up
+
+# Or build and run manually
+docker build -t multi-signal-classifier:latest .
+docker run -p 8000:8000 \
+  -v $(pwd)/models:/app/models \
+  -e MODEL_PATH=/app/models/ensemble_model.pkl \
+  multi-signal-classifier:latest
+```
+
+The API will be available at [http://localhost:8000](http://localhost:8000)
+
+**Note**: The `models/` directory is mounted as a volume, so ensure your trained model files exist locally before starting the container.
+
+For detailed deployment instructions, see [Deployment Guide](docs/DEPLOYMENT.md).
 
 ---
 
