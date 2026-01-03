@@ -2,15 +2,6 @@
 
 Use these specific input combinations in the dashboard to see different states.
 
-## 🚀 Quick Test
-
-**Want to quickly test all combinations?** Run:
-```bash
-python test_dashboard_combinations.py
-```
-
-This will test FLOW, CALM, ALERT, and RISK combinations and show you the results.
-
 ## 🌊 FLOW State (Optimal Conditions)
 
 ### Combination 1: Optimal Plant + FLOW Trading
