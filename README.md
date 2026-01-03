@@ -57,6 +57,7 @@ The technology reduces the cognitive task of processing multiple data streams si
 
 - Python 3.10+
 - pip package manager
+- Node.js 16+ and npm (for interactive dashboard)
 - Docker & Docker Compose (optional, for containerized deployment)
 
 ## Quick Start
@@ -146,6 +147,58 @@ Open browser to: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 You can test all endpoints directly from the Swagger UI. This is the easiest way to make predictions and explore the API.
 
+### 5. Interactive Visualization Dashboard
+
+**Prerequisites**: Node.js 16+ and npm (or yarn)
+
+Start the React-based interactive dashboard for a visual, user-friendly interface:
+
+```bash
+# Navigate to dashboard directory
+cd dashboard
+
+# Install dependencies (first time only)
+npm install
+
+# Start the development server
+npm run dev
+```
+
+The dashboard will open automatically. The default port is [http://localhost:5173](http://localhost:5173), but if that port is in use, Vite will automatically use the next available port (e.g., 5174, 5175). Check the terminal output for the exact URL.
+
+**Features:**
+- **Visual Input Controls**: Icon-based interface with dropdown selectors for all 7 input signals
+  - Plant Sensors: Soil Moisture, Temperature, Stress Score
+  - Trading Terminal: Price Change, Volatility, Volume, RSI
+- **Animated Light Bulb Visualization**: Real-time state visualization with 5 distinct states (calm, alert, risk, flow, deviation)
+- **Probability Distribution Chart**: Interactive bar chart showing confidence scores for each state
+- **Results Panel**: Detailed prediction results with confidence scores, response times, and lighting configuration
+- **API Health Monitoring**: Real-time connection status indicator
+- **No Scrolling Required**: Compact design that fits in viewport
+
+**Quick Start:**
+1. Ensure the API server is running (see step 2 above)
+2. Start the dashboard: `cd dashboard && npm run dev`
+3. Select values from the dropdowns
+4. Click "Run Prediction" to see results
+5. Watch the light bulb animate and view probability distributions
+
+**Quick Test:**
+Want to quickly test different states? Run:
+```bash
+python test_dashboard_combinations.py
+```
+This tests FLOW, CALM, ALERT, and RISK combinations. For detailed test combinations, see [Dashboard Test Combinations](docs/DASHBOARD_TEST_COMBINATIONS.md).
+
+**Production Build:**
+```bash
+cd dashboard
+npm run build
+# Output: dist/ folder (ready to deploy)
+```
+
+For detailed dashboard documentation, see [Dashboard Documentation](docs/dashboard.md)
+
 ---
 
 ## Docker Deployment
@@ -155,18 +208,28 @@ You can test all endpoints directly from the Swagger UI. This is the easiest way
 ### Quick Docker Setup
 
 ```bash
-# Build and start with Docker Compose
-docker-compose up
+# Build and start both API and Dashboard with Docker Compose
+docker-compose up --build
 
-# Or build and run manually
+# Or start in background
+docker-compose up -d
+```
+
+**Services Available:**
+- **API**: [http://localhost:8000](http://localhost:8000)
+- **API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Dashboard**: [http://localhost:3000](http://localhost:3000)
+
+### Manual Docker Setup (API Only)
+
+```bash
+# Build and run API only
 docker build -t multi-signal-classifier:latest .
 docker run -p 8000:8000 \
   -v $(pwd)/models:/app/models \
   -e MODEL_PATH=/app/models/ensemble_model.pkl \
   multi-signal-classifier:latest
 ```
-
-The API will be available at [http://localhost:8000](http://localhost:8000)
 
 **Note**: The `models/` directory is mounted as a volume, so ensure your trained model files exist locally before starting the container.
 
@@ -192,6 +255,15 @@ multi-signal-state-classifier/
 ├── docker-compose.yml                 # Multi-container setup
 ├── train.py                           # Main training script
 ├── .gitignore                         # Git ignore rules
+│
+├── dashboard/                         # React interactive dashboard
+│   ├── README.md                     # Dashboard documentation
+│   ├── package.json                  # Node.js dependencies
+│   ├── src/                          # React source code
+│   │   ├── components/               # UI components
+│   │   ├── api/                      # API integration
+│   │   └── App.jsx                   # Main application
+│   └── dist/                         # Production build (generated)
 │
 ├── notebooks/                         # EDA notebooks
 │   ├── 01_data_collection.ipynb      # Data loading & exploration
@@ -226,7 +298,7 @@ multi-signal-state-classifier/
 │   └── processed/                     # Processed datasets
 │
 └── models/
-    └── ensemble_model.pkl             # Trained model (generated)
+    └── ensemble_model.pkl           # Trained model (generated)
 ```
 
 ---
@@ -337,6 +409,7 @@ The pipeline creates **100+ engineered features**:
 Complete documentation is available in the `docs/` folder:
 
 - **[API Documentation](docs/API.md)** - Complete API reference with endpoints, request/response formats, and examples. Visit the interactive Swagger UI at `http://localhost:8000/docs` when running locally.
+- **[Dashboard Documentation](docs/dashboard.md)** - Complete guide for the interactive visualization dashboard, including setup, features, configuration, and deployment
 - **[Data Documentation](docs/DATA.md)** - Data generation, datapoints, feature engineering, and data structure
 - **[Deployment Guide](docs/DEPLOYMENT.md)** - Comprehensive deployment instructions for local, Docker, and cloud platforms
 - **[Development Guide](docs/DEVELOPMENT.md)** - Development setup, code structure, testing, and contributing guidelines
@@ -367,7 +440,7 @@ All documentation is organized by topic for easy navigation and reference.
 - WebSocket real-time updates
 - Mobile app for lighting control
 - Multi-tenant deployment
-- Advanced visualization dashboard
+- Enhanced dashboard features (history, presets, export)
 
 ---
 

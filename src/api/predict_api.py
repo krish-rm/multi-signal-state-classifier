@@ -3,6 +3,7 @@ FastAPI application for multi-signal state classification.
 """
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
 import logging
@@ -23,6 +24,15 @@ app = FastAPI(
     title="Multi-Signal State Classifier API",
     description="Production-ready ML pipeline for multi-source signal fusion and state classification",
     version="1.0.0"
+)
+
+# Add CORS middleware to allow cross-origin requests from the dashboard
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for development; restrict in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Global state
@@ -185,6 +195,21 @@ async def predict(request: PredictionRequest) -> PredictionResponse:
         
         # Fill any NaN values (from rolling stats on single row) with 0
         engineered_features = engineered_features.fillna(0)
+        
+        # Debug: Log raw plant health values to verify they're being used
+        logger.debug(f"Raw plant health values: soil_moisture={request.signals.plant_health.soil_moisture}, "
+                    f"temperature={request.signals.plant_health.temperature}, "
+                    f"stress_score={request.signals.plant_health.stress_score}")
+        
+        # Check if plant health features are in the engineered features
+        plant_feature_cols = [col for col in engineered_features.columns 
+                             if any(p in col for p in ['soil_moisture', 'temperature', 'stress_score'])]
+        if plant_feature_cols:
+            logger.debug(f"Plant health features found: {len(plant_feature_cols)} features")
+            # Log a sample of plant health feature values
+            sample_plant_features = {col: engineered_features[col].iloc[0] 
+                                   for col in plant_feature_cols[:5]}  # First 5
+            logger.debug(f"Sample plant feature values: {sample_plant_features}")
         
         # Convert to numpy array for prediction
         feature_array = engineered_features.values

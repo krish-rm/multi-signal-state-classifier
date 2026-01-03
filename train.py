@@ -42,14 +42,32 @@ def main():
     logger.info(f"Engineered features shape: {X.shape}")
     logger.info(f"Number of features: {len(feature_names)}")
     
-    # Step 3: Split Data
-    logger.info("\n[Step 3] Splitting Data (Time-Series Aware)...")
+    # Step 3: Shuffle data to ensure balanced class distribution in splits
+    # (Data is generated sequentially by state, so we need to shuffle)
+    logger.info("\n[Step 3] Shuffling data for balanced splits...")
+    indices = np.arange(len(X))
+    np.random.seed(42)
+    np.random.shuffle(indices)
+    if isinstance(X, pd.DataFrame):
+        X = X.iloc[indices].reset_index(drop=True)
+    else:
+        X = X[indices]
+    labels = labels[indices]
+    
+    logger.info(f"State distribution after shuffle:\n{pd.Series(labels).value_counts()}")
+    
+    # Step 4: Split Data
+    logger.info("\n[Step 4] Splitting Data (Time-Series Aware)...")
     (X_train, y_train), (X_val, y_val), (X_test, y_test) = split_data_time_series(
         X, labels, train_ratio=0.70, val_ratio=0.15, test_ratio=0.15
     )
     
-    # Step 4: Train Ensemble Model
-    logger.info("\n[Step 4] Training Ensemble Model...")
+    logger.info(f"Train set state distribution:\n{pd.Series(y_train).value_counts()}")
+    logger.info(f"Val set state distribution:\n{pd.Series(y_val).value_counts()}")
+    logger.info(f"Test set state distribution:\n{pd.Series(y_test).value_counts()}")
+    
+    # Step 5: Train Ensemble Model
+    logger.info("\n[Step 5] Training Ensemble Model...")
     ensemble = EnsembleClassifier(weights={
         'lightgbm': 0.40,
         'xgboost': 0.35,
@@ -58,16 +76,16 @@ def main():
     
     ensemble.train(X_train, y_train, X_val, y_val, random_state=42)
     
-    # Step 5: Evaluate on Validation Set
-    logger.info("\n[Step 5] Evaluating on Validation Set...")
+    # Step 6: Evaluate on Validation Set
+    logger.info("\n[Step 6] Evaluating on Validation Set...")
     val_metrics = evaluate_model(ensemble, X_val, y_val, "Validation Set")
     
-    # Step 6: Evaluate on Test Set
-    logger.info("\n[Step 6] Evaluating on Test Set...")
+    # Step 7: Evaluate on Test Set
+    logger.info("\n[Step 7] Evaluating on Test Set...")
     test_metrics = evaluate_model(ensemble, X_test, y_test, "Test Set")
     
-    # Step 7: Save Model
-    logger.info("\n[Step 7] Saving Model...")
+    # Step 8: Save Model
+    logger.info("\n[Step 8] Saving Model...")
     os.makedirs("models", exist_ok=True)
     model_path = "models/ensemble_model.pkl"
     ensemble.save(model_path)

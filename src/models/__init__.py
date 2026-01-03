@@ -124,8 +124,8 @@ class EnsembleClassifier:
         """
         logger.info("Training ensemble models...")
         
-        # Create label mapping
-        unique_classes = np.unique(y_train)
+        # Create label mapping (sorted for consistency with sklearn)
+        unique_classes = sorted(np.unique(y_train))
         self.label_map = {label: idx for idx, label in enumerate(unique_classes)}
         self.reverse_label_map = {idx: label for label, idx in self.label_map.items()}
         
@@ -168,39 +168,76 @@ class EnsembleClassifier:
         Returns:
             Predictions or (predictions, probabilities)
         """
-        # Collect predictions from all models
+        # Get ensemble's class order (sorted for consistency)
+        ensemble_classes = sorted(self.label_map.keys())
+        n_classes = len(ensemble_classes)
+        n_samples = X.shape[0] if hasattr(X, 'shape') else len(X)
+        
+        # Collect predictions and probabilities from all models
         predictions = []
         probabilities = []
         
         for model_name, model in self.models.items():
+            # Get raw predictions
             pred = model.predict(X)
+            
+            # Convert to string labels if needed
+            if model_name in ['xgboost', 'lightgbm'] and hasattr(model, 'label_map'):
+                # XGBoost/LightGBM return numeric predictions
+                reverse_map = {v: k for k, v in model.label_map.items()}
+                pred = np.array([reverse_map.get(int(p), str(p)) for p in pred])
+            elif hasattr(model, 'classes_') and isinstance(model.classes_[0], (int, np.integer)):
+                # If sklearn model uses numeric classes, map them
+                if hasattr(model, 'label_map'):
+                    reverse_map = {v: k for k, v in model.label_map.items()}
+                    pred = np.array([reverse_map.get(int(p), str(p)) for p in pred])
+            
             predictions.append(pred)
             
             if return_proba:
+                # Get probabilities from model
                 proba = model.predict_proba(X)
-                probabilities.append(proba)
+                
+                # Align probabilities to ensemble's class order
+                aligned_proba = np.zeros((n_samples, n_classes), dtype=float)
+                
+                if model_name in ['xgboost', 'lightgbm'] and hasattr(model, 'label_map'):
+                    # XGBoost/LightGBM: map from model's label_map to ensemble's
+                    for model_idx, model_label in enumerate(sorted(model.label_map.keys())):
+                        if model_label in self.label_map:
+                            ensemble_idx = self.label_map[model_label]
+                            aligned_proba[:, ensemble_idx] = proba[:, model_idx]
+                elif hasattr(model, 'classes_'):
+                    # sklearn models: map from model.classes_ to ensemble order
+                    for model_idx, model_class in enumerate(model.classes_):
+                        if model_class in self.label_map:
+                            ensemble_idx = self.label_map[model_class]
+                            aligned_proba[:, ensemble_idx] = proba[:, model_idx]
+                else:
+                    # Fallback: assume same order
+                    aligned_proba = proba
+                
+                probabilities.append(aligned_proba)
         
-        predictions = np.array(predictions)
-        
-        # Weighted voting
+        # Weighted voting with probabilities
         if return_proba and probabilities:
-            # Weight the probabilities
-            weighted_proba = np.zeros_like(probabilities[0], dtype=float)
+            weighted_proba = np.zeros((n_samples, n_classes), dtype=float)
+            
+            # Weight and sum probabilities
             for i, (model_name, model) in enumerate(self.models.items()):
                 weight = self.weights.get(model_name, 1.0 / len(self.models))
                 weighted_proba += weight * probabilities[i]
             
-            # Get final predictions from probabilities
+            # Get final predictions from weighted probabilities
             final_preds = np.argmax(weighted_proba, axis=1)
             final_preds = np.array([self.reverse_label_map[p] for p in final_preds])
             
-            # Return class probabilities (averaged across models)
             return final_preds, weighted_proba
         
-        # Simple voting
+        # Simple voting (when return_proba=False)
         final_preds = []
-        for col in range(predictions.shape[1]):
-            pred_col = predictions[:, col]
+        for col in range(n_samples):
+            pred_col = [pred[col] for pred in predictions]
             # Get most common prediction
             unique, counts = np.unique(pred_col, return_counts=True)
             final_preds.append(unique[np.argmax(counts)])

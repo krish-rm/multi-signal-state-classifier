@@ -55,10 +55,7 @@ class StateClassifier:
         if features.ndim == 1:
             features = features.reshape(1, -1)
         
-        # Make prediction
-        prediction = self.model.predict(features)[0]
-        
-        # Get probabilities if available
+        # Get probabilities first - this is the source of truth
         try:
             probabilities = self.model.predict_proba(features)[0]
             
@@ -80,20 +77,22 @@ class StateClassifier:
             prob_dict = {cls: float(prob) for cls, prob in zip(classes, probabilities)}
             confidence = float(max(probabilities))
             
-            # Convert prediction to string label if it's numeric
-            if hasattr(self.model, 'reverse_label_map'):
-                if isinstance(prediction, (int, np.integer)):
-                    prediction = self.model.reverse_label_map[int(prediction)]
-                elif isinstance(prediction, str) and prediction.isdigit():
-                    prediction = self.model.reverse_label_map[int(prediction)]
+            # Determine state from probabilities (highest probability wins)
+            # This ensures state matches what's shown in the probability chart
+            max_prob_idx = int(np.argmax(probabilities))
+            prediction = classes[max_prob_idx]
         except Exception as e:
             logger.warning(f"Error getting probabilities: {e}")
+            # Fallback: use predict() if predict_proba() fails
+            prediction = self.model.predict(features)[0]
+            
             # Try to convert prediction to string label
             if hasattr(self.model, 'reverse_label_map'):
                 if isinstance(prediction, (int, np.integer)):
                     prediction = self.model.reverse_label_map[int(prediction)]
                 elif isinstance(prediction, str) and prediction.isdigit():
                     prediction = self.model.reverse_label_map[int(prediction)]
+            
             prob_dict = {str(prediction): 1.0}
             confidence = 1.0
         

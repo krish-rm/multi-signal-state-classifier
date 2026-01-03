@@ -117,14 +117,16 @@ docker run \
 ### Start Services
 
 ```bash
-# Start all services
+# Start all services (API + Dashboard)
 docker-compose up
 
 # Start in background
 docker-compose up -d
 
 # View logs
-docker-compose logs -f api
+docker-compose logs -f api        # API logs
+docker-compose logs -f dashboard  # Dashboard logs
+docker-compose logs -f            # All logs
 
 # Stop services
 docker-compose down
@@ -133,10 +135,41 @@ docker-compose down
 ### Configuration
 
 The `docker-compose.yml` file defines:
-- API service running on port 8000
-- Volume mounts for models, data, and logs
-- Health checks
-- Network configuration
+- **API service** running on port 8000
+  - Volume mounts for models, data, and logs
+  - Health checks
+  - Network configuration
+- **Dashboard service** running on port 3000
+  - Built from React application
+  - Connects to API service via internal network
+  - Health checks
+  - Depends on API service being healthy
+
+### Access Services
+
+After starting with `docker-compose up`:
+- **API**: http://localhost:8000
+- **API Docs**: http://localhost:8000/docs
+- **Dashboard**: http://localhost:3000
+
+### Dashboard Deployment
+
+The dashboard is automatically built and deployed alongside the API:
+
+```bash
+# Build and start both services
+docker-compose up --build
+
+# Rebuild only dashboard
+docker-compose build dashboard
+docker-compose up dashboard
+```
+
+**Note**: The dashboard is built with `VITE_API_URL=http://localhost:8000` which works when both services are exposed on the host. The browser (client-side) makes requests to `http://localhost:8000`, which connects to the API service exposed on the host port.
+
+For production deployments with different hostnames:
+1. Build the dashboard with the correct API URL: `docker build --build-arg VITE_API_URL=https://api.example.com -t dashboard:latest ./dashboard`
+2. Or use a reverse proxy (nginx/traefik) to route both services under the same domain
 
 ### Custom Compose File
 
@@ -156,7 +189,7 @@ docker-compose -f docker-compose.yml \
 ### Health Checks
 
 ```bash
-# Health check endpoint
+# API health check endpoint
 curl http://localhost:8000/health
 
 # Expected response:
@@ -167,6 +200,12 @@ curl http://localhost:8000/health
 #   "uptime_seconds": 1.23,
 #   "timestamp": "2025-01-15T10:30:00Z"
 # }
+
+# Dashboard health check (if using Docker)
+curl http://localhost:3000
+
+# Check both services with docker-compose
+docker-compose ps
 ```
 
 ### Test Predictions

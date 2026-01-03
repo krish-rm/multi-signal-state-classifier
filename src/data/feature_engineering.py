@@ -329,6 +329,9 @@ class FeaturePipeline:
         trading_df = df[[c for c in trading_cols if c in df.columns]].copy()
         plant_df = df[[c for c in plant_cols if c in df.columns]].copy()
         
+        # Check if single row (common in prediction scenarios)
+        is_single_row = len(df) == 1
+        
         # Extract features
         trading_ts_features = self.ts_extractor.extract_rolling_stats(
             trading_df, trading_cols
@@ -349,6 +352,41 @@ class FeaturePipeline:
         plant_stat_features = self.ts_extractor.extract_statistical_features(
             plant_df, plant_cols
         )
+        
+        # For single row predictions, enhance raw values to compensate for missing time-series context
+        if is_single_row:
+            # Use raw values as rolling means (since rolling mean of 1 value = the value itself)
+            # This ensures plant health signals are properly represented in rolling features
+            for col in plant_cols:
+                if col in plant_df.columns:
+                    raw_val = plant_df[col].iloc[0]
+                    # Set rolling means to the raw value (they should already be, but ensure it)
+                    for window in self.ts_extractor.windows:
+                        mean_col = f'{col}_rolling_mean_{window}'
+                        if mean_col in plant_ts_features.columns:
+                            plant_ts_features.loc[plant_ts_features.index[0], mean_col] = raw_val
+                        # Set min and max to raw value too
+                        min_col = f'{col}_rolling_min_{window}'
+                        max_col = f'{col}_rolling_max_{window}'
+                        if min_col in plant_ts_features.columns:
+                            plant_ts_features.loc[plant_ts_features.index[0], min_col] = raw_val
+                        if max_col in plant_ts_features.columns:
+                            plant_ts_features.loc[plant_ts_features.index[0], max_col] = raw_val
+            
+            # Do the same for trading signals
+            for col in trading_cols:
+                if col in trading_df.columns:
+                    raw_val = trading_df[col].iloc[0]
+                    for window in self.ts_extractor.windows:
+                        mean_col = f'{col}_rolling_mean_{window}'
+                        if mean_col in trading_ts_features.columns:
+                            trading_ts_features.loc[trading_ts_features.index[0], mean_col] = raw_val
+                        min_col = f'{col}_rolling_min_{window}'
+                        max_col = f'{col}_rolling_max_{window}'
+                        if min_col in trading_ts_features.columns:
+                            trading_ts_features.loc[trading_ts_features.index[0], min_col] = raw_val
+                        if max_col in trading_ts_features.columns:
+                            trading_ts_features.loc[trading_ts_features.index[0], max_col] = raw_val
         
         # Fusion features
         fusion_features = self.fusion.create_cross_source_features(
