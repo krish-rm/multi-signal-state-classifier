@@ -39,9 +39,8 @@ The technology reduces the cognitive task of processing multiple data streams si
 
 ## 📋 Table of Contents
 
+- [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
-- [Installation](#installation)
-- [Usage](#usage)
 - [Project Structure](#project-structure)
 - [Data & Features](#data--features)
 - [Model Architecture](#model-architecture)
@@ -52,6 +51,12 @@ The technology reduces the cognitive task of processing multiple data streams si
 - [License](#license)
 
 ---
+
+## Prerequisites
+
+- Python 3.10+
+- pip package manager
+- Docker & Docker Compose (optional, for containerized deployment)
 
 ## Quick Start
 
@@ -139,115 +144,6 @@ curl -X POST http://localhost:8000/predict \
 Open browser to: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 You can test all endpoints directly from the Swagger UI. This is the easiest way to make predictions and explore the API.
-
----
-
-## Installation
-
-### Prerequisites
-
-- Python 3.10+
-- pip package manager
-- Docker & Docker Compose (optional, for containerized deployment)
-
-### Setup Steps
-
-```bash
-# 1. Clone repository
-git clone <your-repo-url>
-cd multi-signal-state-classifier
-
-# 2. Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Generate data and train model
-python train.py
-
-# 5. Run tests
-pytest tests/ -v --cov=src
-
-# 6. Start API server
-uvicorn src.api.predict_api:app --reload --port 8000
-```
-
-### Verify Installation
-
-Navigate to [http://localhost:8000/docs](http://localhost:8000/docs) to see the interactive API documentation.
-
----
-
-## Usage
-
-### Training
-
-```bash
-# Train model with default settings
-python train.py
-
-# The script will:
-# - Generate synthetic data (2,500 samples)
-# - Engineer features (100+ features)
-# - Train ensemble model
-# - Evaluate on test set
-# - Save model to models/ensemble_model.pkl
-```
-
-### Making Predictions
-
-**Note**: Make sure the API server is running before making predictions. Start it with:
-```bash
-uvicorn src.api.predict_api:app --reload --port 8000
-```
-
-**Single Prediction:**
-```bash
-curl -X POST http://localhost:8000/predict \
-  -H "Content-Type: application/json" \
-  -d '{
-    "signals": {
-      "trading": {
-        "price_change": 0.02,
-        "volatility": 0.15,
-        "volume": 1000000,
-        "rsi": 65.5
-      },
-      "plant_health": {
-        "soil_moisture": 0.65,
-        "temperature": 22.5,
-        "stress_score": 0.3
-      }
-    }
-  }'
-```
-
-**Batch Prediction:**
-```bash
-curl -X POST http://localhost:8000/predict/batch \
-  -H "Content-Type: application/json" \
-  -d '[{ "signals": {...} }, { "signals": {...} }]'
-```
-
-**Get Lighting Configuration:**
-```bash
-curl http://localhost:8000/lighting-info/calm
-```
-
-### Running Tests
-
-```bash
-# Run all tests
-pytest tests/ -v
-
-# Run with coverage
-pytest tests/ --cov=src --cov-report=html
-
-# Run specific test file
-pytest tests/test_models.py -v
-```
 
 ---
 
