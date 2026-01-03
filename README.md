@@ -176,12 +176,7 @@ The dashboard will open automatically. The default port is [http://localhost:517
 - **API Health Monitoring**: Real-time connection status indicator
 
 
-**Quick Test:**
-Want to quickly test different states? Run:
-```bash
-python test_dashboard_combinations.py
-```
-This tests FLOW, CALM, ALERT, and RISK combinations. For detailed test combinations, see [Dashboard Test Combinations](docs/DASHBOARD_TEST_COMBINATIONS.md).
+**Want to try different combinations?** See [Dashboard Test Combinations](docs/DASHBOARD_TEST_COMBINATIONS.md) for specific input values to test FLOW, CALM, ALERT, and RISK states.
 
 **Production Build:**
 ```bash
