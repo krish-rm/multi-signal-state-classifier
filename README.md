@@ -174,14 +174,7 @@ The dashboard will open automatically. The default port is [http://localhost:517
 - **Probability Distribution Chart**: Interactive bar chart showing confidence scores for each state
 - **Results Panel**: Detailed prediction results with confidence scores, response times, and lighting configuration
 - **API Health Monitoring**: Real-time connection status indicator
-- **No Scrolling Required**: Compact design that fits in viewport
 
-**Quick Start:**
-1. Ensure the API server is running (see step 2 above)
-2. Start the dashboard: `cd dashboard && npm run dev`
-3. Select values from the dropdowns
-4. Click "Run Prediction" to see results
-5. Watch the light bulb animate and view probability distributions
 
 **Quick Test:**
 Want to quickly test different states? Run:
