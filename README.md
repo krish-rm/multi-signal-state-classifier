@@ -197,16 +197,42 @@ For detailed dashboard documentation, see [Dashboard Documentation](docs/dashboa
 
 ```bash
 # Build and start both API and Dashboard with Docker Compose
-docker-compose up --build
+docker compose up --build
 
 # Or start in background
-docker-compose up -d
+docker compose up -d
+
+# Stop services
+docker compose down
 ```
+
+**Note**: You can use either `docker compose` (modern syntax) or `docker-compose` (legacy). The first build may take several minutes to download dependencies and build images.
 
 **Services Available:**
 - **API**: [http://localhost:8000](http://localhost:8000)
 - **API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
 - **Dashboard**: [http://localhost:3000](http://localhost:3000)
+
+### Verifying Deployment
+
+After starting the services, verify they're running correctly:
+
+```bash
+# Check API health
+curl http://localhost:8000/health
+
+# Check if containers are running
+docker compose ps
+
+# View logs
+docker compose logs api
+docker compose logs dashboard
+```
+
+You should see:
+- API health endpoint returns `{"status":"healthy","model_loaded":true,...}`
+- Dashboard accessible at http://localhost:3000
+- Both containers show as "healthy" or "running" status
 
 ### Manual Docker Setup (API Only)
 
@@ -398,6 +424,7 @@ Complete documentation is available in the `docs/` folder:
 
 - **[API Documentation](docs/API.md)** - Complete API reference with endpoints, request/response formats, and examples. Visit the interactive Swagger UI at `http://localhost:8000/docs` when running locally.
 - **[Dashboard Documentation](docs/dashboard.md)** - Complete guide for the interactive visualization dashboard, including setup, features, configuration, and deployment
+- **[Dashboard Test Combinations](docs/DASHBOARD_TEST_COMBINATIONS.md)** - Specific input combinations to test different states (FLOW, CALM, ALERT, RISK) in the dashboard
 - **[Data Documentation](docs/DATA.md)** - Data generation, datapoints, feature engineering, and data structure
 - **[Deployment Guide](docs/DEPLOYMENT.md)** - Comprehensive deployment instructions for local, Docker, and cloud platforms
 - **[Development Guide](docs/DEVELOPMENT.md)** - Development setup, code structure, testing, and contributing guidelines
